@@ -60,13 +60,11 @@ data class Harbor(val mDatabase: List<LinkedList<Char>>) {
                         .map { it.toCharArray().first() }
                 }
                 .forEach { items ->
-                    items.forEachIndexed { row, item ->
-                        if (!item.isWhitespace()) {
-                            database[row].push(item)
-                        }
-                    }
-                }
+                    items.withIndex()
+                        .filter { !it.value.isWhitespace() }
+                        .forEach { (row, item) -> database[row].push(item) };
 
+                }
             return Harbor(database)
         }
     }
