@@ -34,12 +34,11 @@ fun findMessage(line: String, length: Int): Int {
     return line
         .withIndex()
         .windowed(length, 1)
-        .first { value ->
-            val values = value.map { it.value }
-                .toList()
-                .sortedBy { it }
+        .first { it ->
+            it.map { it.value }
+                .sorted()
                 .distinct()
-            values.count() == length
+                .count() == length
         }.last().index + 1
 }
 
