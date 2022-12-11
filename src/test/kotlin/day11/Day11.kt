@@ -2,7 +2,6 @@ package day11
 
 import org.junit.jupiter.api.Test
 import java.io.File
-import java.math.BigInteger
 import java.nio.charset.Charset
 import java.util.LinkedList
 import kotlin.test.assertEquals
@@ -15,7 +14,10 @@ class Day11 {
         repeat(20) {
             game.round()
         }
-        val solution = game.apes.map { it.count() }.sortedDescending().take(2).fold(1) { acc, i -> acc * i };
+
+        game.inspect()
+
+        val solution = game.apes.map { it.count() }.sortedDescending().take(2).fold(1L) { acc, i -> acc * i }
         assertEquals(10605, solution)
     }
 
@@ -26,33 +28,48 @@ class Day11 {
         repeat(20) {
             game.round()
         }
-        val solution = game.apes.map { it.count() }.sortedDescending().take(2).fold(1) { acc, i -> acc * i };
+        val solution = game.apes.map { it.count() }.sortedDescending().take(2).fold(1L) { acc, i -> acc * i }
         assertEquals(55216, solution)
     }
 
     @Test
     fun sampleGold() {
-        val game = Game(parseApes("sample"))
+        val game = Game(parseApes("sample", noWorries = true))
 
-        var i = 0;
         repeat(10000) {
-            i++
-            println("running round $i of 10000")
             game.round()
-
         }
-        val solution = game.apes.map { it.count() }.sortedDescending().take(2).fold(1) { acc, i -> acc * i };
-        assertEquals(10605, solution)
+
+        game.inspect()
+
+        val solution = game.apes.map { it.count() }.sortedDescending().take(2).fold(1L) { acc, i -> acc * i }
+        assertEquals(2713310158, solution)
+    }
+
+    @Test
+    fun gold() {
+        val game = Game(parseApes("input", noWorries = true))
+
+        repeat(10000) {
+            game.round()
+        }
+
+        val solution = game.apes.map { it.count() }.sortedDescending().take(2).fold(1L) { acc, i -> acc * i }
+        assertEquals(12848882750, solution)
     }
 
 }
 
 interface ApeCallback {
-    fun throwItem(destination: Int, value: BigInteger)
+    fun throwItem(destination: Int, value: Long)
 }
 
 class Game(val apes: List<Ape>) : ApeCallback {
+    private var dividor: Long = 0
+
     init {
+        // common dividor is the product of all module parameters
+        dividor = apes.map { it.testDivisible }.fold(1) { acc, value -> acc * value }
         apes.forEach {
             it.setCallback(this)
         }
@@ -64,28 +81,29 @@ class Game(val apes: List<Ape>) : ApeCallback {
         }
     }
 
-    override fun throwItem(destination: Int, value: BigInteger) {
+    override fun throwItem(destination: Int, value: Long) {
         //println("forwarding item to ape $destination with $value")
-        apes.first { it.apeId == destination }.addItem(value)
+        // shrink the values with common dividor, same modulo logic still applies
+        // but values are significantly smaller
+        apes.first { it.apeId == destination }.addItem(value % dividor)
     }
 
     fun inspect() {
-        apes.forEach { println(it.printInformation()) }
+        apes.forEach { it.printInformation() }
     }
-
 }
 
 class Ape(
     val apeId: Int,
     private val operation: Pair<Operator, Int>,
-    private val testDivisible: Long,
+    val testDivisible: Long,
     private val goodMonkey: Int,
     private val badMonkey: Int,
     private val noWorries: Boolean,
 ) {
-    private val items = LinkedList<BigInteger>()
+    private val items = LinkedList<Long>()
     private var callback: ApeCallback? = null
-    private var inspectionCount: Int = 0
+    private var inspectionCount: Long = 0
 
     fun setCallback(cb: ApeCallback) {
         callback = cb
@@ -93,15 +111,15 @@ class Ape(
 
     fun play() {
         while (!items.isEmpty()) {
-            val it = items.pop();
+            val it = items.pop()
             //println("monkey $apeId started with item $it")
-            var inspectionBegin = beginInspection(it)
+            val inspectionBegin = beginInspection(it)
             //println("monkey begins inspection: worry value changed to $inspectionBegin")
 
-            var inspectionEnd = endInspection(inspectionBegin)
+            val inspectionEnd = endInspection(inspectionBegin)
             //println("monkey ends inspection: worry value changed to $inspectionEnd")
 
-            if (inspectionEnd % testDivisible.toBigInteger() == BigInteger.ZERO) {
+            if (inspectionEnd % testDivisible == 0L) {
                 //println("$inspectionEnd is dividable by $testDivisible - will throw to monkey with id $goodMonkey")
                 callback?.throwItem(goodMonkey, inspectionEnd)
             } else {
@@ -112,33 +130,32 @@ class Ape(
         }
     }
 
-    private fun beginInspection(value: BigInteger): BigInteger {
+    private fun beginInspection(value: Long): Long {
         return when (operation.first) {
-            Operator.Plus -> value + operation.second.toBigInteger()
-            Operator.Multiply -> value * operation.second.toBigInteger()
+            Operator.Plus -> value + operation.second
+            Operator.Multiply -> value * operation.second
             Operator.Square -> value * value
         }
     }
 
-    private fun endInspection(value: BigInteger): BigInteger {
+    private fun endInspection(value: Long): Long {
         if (noWorries) {
-            return value;
+            return value
         }
-        return value / BigInteger.valueOf(3)
+        return value / 3
     }
 
-    fun addItem(item: BigInteger) {
+    fun addItem(item: Long) {
         items.push(item)
     }
 
     fun printInformation() {
-        println("monkey $apeId: items $items, operation $operation, test $testDivisible, good monkey: $goodMonkey, bad monkey: $badMonkey")
+        println("monkey $apeId: seen: ${count()} items $items, operation $operation, test $testDivisible, good monkey: $goodMonkey, bad monkey: $badMonkey")
     }
 
-    fun count(): Int {
+    fun count(): Long {
         return inspectionCount
     }
-
 }
 
 enum class Operator {
@@ -153,7 +170,7 @@ private fun parseApes(filename: String, noWorries: Boolean = false): List<Ape> {
         .readText(Charset.defaultCharset()).split("\n\n")
         .mapIndexed { monkey_id, monkey ->
 
-            val description = monkey.lines().drop(1);
+            val description = monkey.lines().drop(1)
 
             val operationLine = description[1].substringAfter("new = ")
             val operation = if (operationLine.contains("+")) {
@@ -172,7 +189,7 @@ private fun parseApes(filename: String, noWorries: Boolean = false): List<Ape> {
             description[0]
                 .substringAfter(":")
                 .split(",")
-                .map { it.trim().toBigInteger() }
+                .map { it.trim().toLong() }
                 .forEach { ape.addItem(it) }
 
             ape
