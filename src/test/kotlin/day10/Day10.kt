@@ -31,15 +31,15 @@ class Day10 {
         assertFalse(cpu.cycle())
     }
 
-
     @Test
     fun sampleSilverLarge() {
         val cpu = CPU(parseCommands("large"))
 
-        val history = (0..220).map {
-            cpu.cycle()
-            cpu.getRegister()
-        }
+        val history =
+            (0..220).map {
+                cpu.cycle()
+                cpu.getRegister()
+            }
 
         assertEquals(21, history[18])
         assertEquals(19, history[58])
@@ -48,10 +48,18 @@ class Day10 {
         assertEquals(16, history[178])
         assertEquals(18, history[218])
 
-        val solution = history
-            .withIndex()
-            .filterIndexed { index, _ -> index == 18 || index == 58 || index == 98 || index == 138 || index == 178 || index == 218 }
-            .fold(0) { acc, i -> acc.plus((i.index + 2) * i.value) }
+        val solution =
+            history
+                .withIndex()
+                .filterIndexed { index, _ ->
+                    index == 18 ||
+                        index == 58 ||
+                        index == 98 ||
+                        index == 138 ||
+                        index == 178 ||
+                        index == 218
+                }
+                .fold(0) { acc, i -> acc.plus((i.index + 2) * i.value) }
 
         assertEquals(13140, solution)
     }
@@ -60,15 +68,24 @@ class Day10 {
     fun silver() {
         val cpu = CPU(parseCommands("input"))
 
-        val history = (0..220).map {
-            cpu.cycle()
-            cpu.getRegister()
-        }
+        val history =
+            (0..220).map {
+                cpu.cycle()
+                cpu.getRegister()
+            }
 
-        val solution = history
-            .withIndex()
-            .filterIndexed { index, _ -> index == 18 || index == 58 || index == 98 || index == 138 || index == 178 || index == 218 }
-            .fold(0) { acc, i -> acc.plus((i.index + 2) * i.value) }
+        val solution =
+            history
+                .withIndex()
+                .filterIndexed { index, _ ->
+                    index == 18 ||
+                        index == 58 ||
+                        index == 98 ||
+                        index == 138 ||
+                        index == 178 ||
+                        index == 218
+                }
+                .fold(0) { acc, i -> acc.plus((i.index + 2) * i.value) }
 
         assertEquals(13740, solution)
     }
@@ -78,25 +95,38 @@ class Day10 {
         val cpu = CPU(parseCommands("input"))
 
         val sprite = "###....................................."
-        var spriteForEachCycle = (0..250).map {
-            cpu.cycle()
-            moveSprite(sprite, cpu.getRegister() - 1)
-        }
+        var spriteForEachCycle =
+            (0..250).map {
+                cpu.cycle()
+                moveSprite(sprite, cpu.getRegister() - 1)
+            }
 
         spriteForEachCycle = listOf(sprite) + spriteForEachCycle
 
-        val line1 = (0..39).mapIndexed { idx, it -> spriteForEachCycle[it][idx] }
-            .fold("") { acc, c -> acc.plus(c) }
-        val line2 = (40..79).mapIndexed { idx, it -> spriteForEachCycle[it][idx] }
-            .fold("") { acc, c -> acc.plus(c) }
-        val line3 = (80..119).mapIndexed { idx, it -> spriteForEachCycle[it][idx] }
-            .fold("") { acc, c -> acc.plus(c) }
-        val line4 = (120..159).mapIndexed { idx, it -> spriteForEachCycle[it][idx] }
-            .fold("") { acc, c -> acc.plus(c) }
-        val line5 = (160..199).mapIndexed { idx, it -> spriteForEachCycle[it][idx] }
-            .fold("") { acc, c -> acc.plus(c) }
-        val line6 = (200..239).mapIndexed { idx, it -> spriteForEachCycle[it][idx] }
-            .fold("") { acc, c -> acc.plus(c) }
+        val line1 =
+            (0..39)
+                .mapIndexed { idx, it -> spriteForEachCycle[it][idx] }
+                .fold("") { acc, c -> acc.plus(c) }
+        val line2 =
+            (40..79)
+                .mapIndexed { idx, it -> spriteForEachCycle[it][idx] }
+                .fold("") { acc, c -> acc.plus(c) }
+        val line3 =
+            (80..119)
+                .mapIndexed { idx, it -> spriteForEachCycle[it][idx] }
+                .fold("") { acc, c -> acc.plus(c) }
+        val line4 =
+            (120..159)
+                .mapIndexed { idx, it -> spriteForEachCycle[it][idx] }
+                .fold("") { acc, c -> acc.plus(c) }
+        val line5 =
+            (160..199)
+                .mapIndexed { idx, it -> spriteForEachCycle[it][idx] }
+                .fold("") { acc, c -> acc.plus(c) }
+        val line6 =
+            (200..239)
+                .mapIndexed { idx, it -> spriteForEachCycle[it][idx] }
+                .fold("") { acc, c -> acc.plus(c) }
 
         assertEquals(line1, "####.#..#.###..###..####.####..##..#....")
         assertEquals(line2, "...#.#..#.#..#.#..#.#....#....#..#.#....")
@@ -150,7 +180,6 @@ class Command(pair: Pair<CommandType, Optional<Int>>) {
     }
 }
 
-
 class CPU(private val commandQueue: List<Command>) {
     private var register: Int = 1
     private var cycle: Long = 0
@@ -177,21 +206,21 @@ class CPU(private val commandQueue: List<Command>) {
 }
 
 private fun parseCommands(filename: String): List<Command> {
-
     return File("src/test/kotlin/day10/$filename")
-        .readLines().map {
+        .readLines()
+        .map {
             val split = it.split(" ")
             split.first() to split.last()
         }
         .map { (command, value) ->
             val optionalValue = value.toIntOrNull()
             Command(
-                CommandType.fromString(command) to if (optionalValue == null) {
-                    Optional.empty()
-                } else {
-                    Optional.of(optionalValue)
-                }
+                CommandType.fromString(command) to
+                    if (optionalValue == null) {
+                        Optional.empty()
+                    } else {
+                        Optional.of(optionalValue)
+                    }
             )
         }
 }
-

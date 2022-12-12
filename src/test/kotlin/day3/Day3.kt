@@ -34,32 +34,33 @@ class Day3 {
     }
 }
 
-var lookup = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+var lookup = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
 fun silver(lines: List<String>): Int {
-    return lines.map { line -> Pair(line.substring(0, line.length / 2), line.substring(line.length / 2)) }
+    return lines
+        .map { line -> Pair(line.substring(0, line.length / 2), line.substring(line.length / 2)) }
         .map { pair ->
             pair.first.toCharArray().filter { pair.second.toCharArray().contains(it) }.distinct()
         }
         .flatten()
-        .map {
-            lookup.indexOf(it) + 1
-        }
-        .sum();
+        .map { lookup.indexOf(it) + 1 }
+        .sum()
 }
 
 fun gold(lines: List<String>): Int {
-    return lines.windowed(3, 3).map { group ->
-        group[0].toCharArray().filter { char -> group[1].contains(char) && group[2].contains(char) }.distinct()
-    }
-        .flatten()
-        .map {
-            lookup.indexOf(it) + 1
+    return lines
+        .windowed(3, 3)
+        .map { group ->
+            group[0]
+                .toCharArray()
+                .filter { char -> group[1].contains(char) && group[2].contains(char) }
+                .distinct()
         }
+        .flatten()
+        .map { lookup.indexOf(it) + 1 }
         .sum()
 }
 
 fun read_puzzle_input(filename: String): List<String> {
-    return File("src/test/kotlin/day3/$filename")
-        .readLines()
+    return File("src/test/kotlin/day3/$filename").readLines()
 }

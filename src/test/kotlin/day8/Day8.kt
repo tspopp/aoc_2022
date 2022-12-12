@@ -11,7 +11,6 @@ class Day8 {
         assertEquals(21, map.visibleTrees())
     }
 
-
     @Test
     fun silver() {
         val map = Forest.fromInput(read_puzzle_input("input"))
@@ -43,41 +42,38 @@ typealias Coordinate = Pair<Int, Int>
 data class Forest(val database: Map<Coordinate, Int>) {
     companion object {
         fun fromInput(lines: List<String>): Forest {
-            return Forest(lines.map { it.windowed(1, 1) }
-                .flatMapIndexed { y: Int, row: List<String> ->
-                    row.mapIndexed { x, it ->
-                        Coordinate(
-                            x,
-                            y,
-                        ) to it.toInt()
+            return Forest(
+                lines
+                    .map { it.windowed(1, 1) }
+                    .flatMapIndexed { y: Int, row: List<String> ->
+                        row.mapIndexed { x, it -> Coordinate(x, y) to it.toInt() }
                     }
-                }.toMap())
+                    .toMap()
+            )
         }
     }
 }
 
 fun Forest.visibleTrees(): Int {
-    return database.map { tree ->
-        Direction.values()
-            .map {
-                visibilityAndScore(tree.key, getValueFromCoord(tree.key), it, 1).first
-            }
-            .count { it }
-    }.count { it > 0 }
+    return database
+        .map { tree ->
+            Direction.values()
+                .map { visibilityAndScore(tree.key, getValueFromCoord(tree.key), it, 1).first }
+                .count { it }
+        }
+        .count { it > 0 }
 }
 
 fun Forest.highestSceneryScore(): Int {
     return database.maxOf { tree ->
         Direction.values()
-            .map {
-                visibilityAndScore(tree.key, getValueFromCoord(tree.key), it, 1).second
-            }
+            .map { visibilityAndScore(tree.key, getValueFromCoord(tree.key), it, 1).second }
             .fold(1) { acc, value -> acc * value }
     }
 }
 
-
 const val HORIZON_VALUE = -1
+
 private fun Forest.getValueFromCoord(coord: Coordinate): Int {
     return database.getOrDefault(coord, HORIZON_VALUE)
 }
@@ -88,14 +84,14 @@ private fun Forest.visibilityAndScore(
     direction: Direction,
     score: Int
 ): Pair<Boolean, Int> {
-
     val (x, y) = coord
-    val nextPoint = when (direction) {
-        Direction.LEFT -> x - 1 to y
-        Direction.UP -> x to y - 1
-        Direction.DOWN -> x to y + 1
-        Direction.RIGHT -> x + 1 to y
-    }
+    val nextPoint =
+        when (direction) {
+            Direction.LEFT -> x - 1 to y
+            Direction.UP -> x to y - 1
+            Direction.DOWN -> x to y + 1
+            Direction.RIGHT -> x + 1 to y
+        }
     val valueNextPoint = getValueFromCoord(nextPoint)
 
     // we are not visible, shadowed by a tree
@@ -109,10 +105,8 @@ private fun Forest.visibilityAndScore(
     }
     // check the next point and pre-increment tree score
     return visibilityAndScore(nextPoint, start, direction, score + 1)
-
 }
 
 fun read_puzzle_input(filename: String): List<String> {
-    return File("src/test/kotlin/day8/$filename")
-        .readLines()
+    return File("src/test/kotlin/day8/$filename").readLines()
 }

@@ -11,13 +11,12 @@ class Day11 {
     fun sampleSilver() {
         val game = Game(parseApes("sample"))
 
-        repeat(20) {
-            game.round()
-        }
+        repeat(20) { game.round() }
 
         game.inspect()
 
-        val solution = game.apes.map { it.count() }.sortedDescending().take(2).fold(1L) { acc, i -> acc * i }
+        val solution =
+            game.apes.map { it.count() }.sortedDescending().take(2).fold(1L) { acc, i -> acc * i }
         assertEquals(10605, solution)
     }
 
@@ -25,10 +24,9 @@ class Day11 {
     fun silver() {
         val game = Game(parseApes("input"))
 
-        repeat(20) {
-            game.round()
-        }
-        val solution = game.apes.map { it.count() }.sortedDescending().take(2).fold(1L) { acc, i -> acc * i }
+        repeat(20) { game.round() }
+        val solution =
+            game.apes.map { it.count() }.sortedDescending().take(2).fold(1L) { acc, i -> acc * i }
         assertEquals(55216, solution)
     }
 
@@ -36,13 +34,12 @@ class Day11 {
     fun sampleGold() {
         val game = Game(parseApes("sample", noWorries = true))
 
-        repeat(10000) {
-            game.round()
-        }
+        repeat(10000) { game.round() }
 
         game.inspect()
 
-        val solution = game.apes.map { it.count() }.sortedDescending().take(2).fold(1L) { acc, i -> acc * i }
+        val solution =
+            game.apes.map { it.count() }.sortedDescending().take(2).fold(1L) { acc, i -> acc * i }
         assertEquals(2713310158, solution)
     }
 
@@ -50,14 +47,12 @@ class Day11 {
     fun gold() {
         val game = Game(parseApes("input", noWorries = true))
 
-        repeat(10000) {
-            game.round()
-        }
+        repeat(10000) { game.round() }
 
-        val solution = game.apes.map { it.count() }.sortedDescending().take(2).fold(1L) { acc, i -> acc * i }
+        val solution =
+            game.apes.map { it.count() }.sortedDescending().take(2).fold(1L) { acc, i -> acc * i }
         assertEquals(12848882750, solution)
     }
-
 }
 
 interface ApeCallback {
@@ -70,19 +65,15 @@ class Game(val apes: List<Ape>) : ApeCallback {
     init {
         // common dividor is the product of all module parameters
         dividor = apes.map { it.testDivisible }.fold(1) { acc, value -> acc * value }
-        apes.forEach {
-            it.setCallback(this)
-        }
+        apes.forEach { it.setCallback(this) }
     }
 
     fun round() {
-        apes.sortedBy { it.apeId }.forEach {
-            it.play()
-        }
+        apes.sortedBy { it.apeId }.forEach { it.play() }
     }
 
     override fun throwItem(destination: Int, value: Long) {
-        //println("forwarding item to ape $destination with $value")
+        // println("forwarding item to ape $destination with $value")
         // shrink the values with common dividor, same modulo logic still applies
         // but values are significantly smaller
         apes.first { it.apeId == destination }.addItem(value % dividor)
@@ -99,7 +90,7 @@ class Ape(
     val testDivisible: Long,
     private val goodMonkey: Int,
     private val badMonkey: Int,
-    private val noWorries: Boolean,
+    private val noWorries: Boolean
 ) {
     private val items = LinkedList<Long>()
     private var callback: ApeCallback? = null
@@ -112,18 +103,20 @@ class Ape(
     fun play() {
         while (!items.isEmpty()) {
             val it = items.pop()
-            //println("monkey $apeId started with item $it")
+            // println("monkey $apeId started with item $it")
             val inspectionBegin = beginInspection(it)
-            //println("monkey begins inspection: worry value changed to $inspectionBegin")
+            // println("monkey begins inspection: worry value changed to $inspectionBegin")
 
             val inspectionEnd = endInspection(inspectionBegin)
-            //println("monkey ends inspection: worry value changed to $inspectionEnd")
+            // println("monkey ends inspection: worry value changed to $inspectionEnd")
 
             if (inspectionEnd % testDivisible == 0L) {
-                //println("$inspectionEnd is dividable by $testDivisible - will throw to monkey with id $goodMonkey")
+                // println("$inspectionEnd is dividable by $testDivisible - will throw to monkey with id
+                // $goodMonkey")
                 callback?.throwItem(goodMonkey, inspectionEnd)
             } else {
-                //println("$inspectionEnd is NOT dividable by $testDivisible - will throw to monkey with id $badMonkey")
+                // println("$inspectionEnd is NOT dividable by $testDivisible - will throw to monkey with id
+                // $badMonkey")
                 callback?.throwItem(badMonkey, inspectionEnd)
             }
             inspectionCount++
@@ -150,7 +143,9 @@ class Ape(
     }
 
     fun printInformation() {
-        println("monkey $apeId: seen: ${count()} items $items, operation $operation, test $testDivisible, good monkey: $goodMonkey, bad monkey: $badMonkey")
+        println(
+            "monkey $apeId: seen: ${count()} items $items, operation $operation, test $testDivisible, good monkey: $goodMonkey, bad monkey: $badMonkey"
+        )
     }
 
     fun count(): Long {
@@ -164,22 +159,22 @@ enum class Operator {
     Square
 }
 
-
 private fun parseApes(filename: String, noWorries: Boolean = false): List<Ape> {
     return File("src/test/kotlin/day11/$filename")
-        .readText(Charset.defaultCharset()).split("\n\n")
+        .readText(Charset.defaultCharset())
+        .split("\n\n")
         .mapIndexed { monkey_id, monkey ->
-
             val description = monkey.lines().drop(1)
 
             val operationLine = description[1].substringAfter("new = ")
-            val operation = if (operationLine.contains("+")) {
-                Operator.Plus to operationLine.substringAfter("+").trim().toInt()
-            } else if (operationLine == "old * old") {
-                Operator.Square to 2
-            } else {
-                Operator.Multiply to operationLine.substringAfter("*").trim().toInt()
-            }
+            val operation =
+                if (operationLine.contains("+")) {
+                    Operator.Plus to operationLine.substringAfter("+").trim().toInt()
+                } else if (operationLine == "old * old") {
+                    Operator.Square to 2
+                } else {
+                    Operator.Multiply to operationLine.substringAfter("*").trim().toInt()
+                }
 
             val disableBy = description[2].substringAfter("by").trim().toLong()
             val goodMonkey = description[3].substringAfter("monkey").trim().toInt()
@@ -193,5 +188,6 @@ private fun parseApes(filename: String, noWorries: Boolean = false): List<Ape> {
                 .forEach { ape.addItem(it) }
 
             ape
-        }.toList()
+        }
+        .toList()
 }

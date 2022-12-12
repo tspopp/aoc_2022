@@ -42,6 +42,5 @@ fun create_elves(raw: String): List<Elv> {
 }
 
 fun read_puzzle_input(filename: String): String {
-    return File("src/test/kotlin/day1/$filename")
-        .readText(Charsets.UTF_8)
+    return File("src/test/kotlin/day1/$filename").readText(Charsets.UTF_8)
 }

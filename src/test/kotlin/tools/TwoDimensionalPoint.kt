@@ -11,7 +11,7 @@ fun Point.movePoint(direction: Direction): Point {
     }
 }
 
-fun Point.directNeighbors(): List<Point>{
+fun Point.directNeighbors(): List<Point> {
     return Direction.values()
         .map { this.movePoint(it) }
         .filter { it -> it.first >= 0 && it.second >= 0 }
@@ -22,5 +22,5 @@ enum class Direction {
     Right,
     Up,
     Left,
-    Down;
+    Down
 }

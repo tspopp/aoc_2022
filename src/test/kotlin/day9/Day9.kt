@@ -2,7 +2,6 @@ package day9
 
 import org.junit.jupiter.api.Test
 import tools.Direction
-import tools.Direction.*
 import tools.Point
 import tools.movePoint
 import java.io.File
@@ -61,7 +60,8 @@ class Day9 {
 class SnakeElem(child: SnakeElem?, isHead: Boolean = false) {
     var mIsHead: Boolean = isHead
 
-    // TODO: Instead of tracking childs on our own, we might want to use a data structure which does it for free?
+    // TODO: Instead of tracking childs on our own, we might want to use a data structure which does
+    // it for free?
     var mChild: SnakeElem? = child
     var mPosition: Point = 0 to 0
 
@@ -69,7 +69,6 @@ class SnakeElem(child: SnakeElem?, isHead: Boolean = false) {
         return mChild == null
     }
 }
-
 
 class Playfield(snakeLength: Int) {
     private val snake: ArrayList<SnakeElem> = ArrayList()
@@ -99,31 +98,34 @@ class Playfield(snakeLength: Int) {
     }
 
     private fun syncTailWithHead(parent: SnakeElem) {
-        val child = parent.mChild!!;
+        val child = parent.mChild!!
 
         val (xParent, yParent) = parent.mPosition
         val (xChild, yChild) = child.mPosition
 
-        // TODO: We might want to go for something simpler. No one really needs to know about distance sqrt(2) :)
+        // TODO: We might want to go for something simpler. No one really needs to know about distance
+        // sqrt(2) :)
         if (sqrt((xChild - xParent).toDouble().pow(2) + (yChild - yParent).toDouble().pow(2)) < 2.0) {
             return
         }
 
-        val xChildNew = if (xParent > xChild) {
-            xChild + 1
-        } else if (xParent < xChild) {
-            xChild - 1
-        } else {
-            xChild
-        }
+        val xChildNew =
+            if (xParent > xChild) {
+                xChild + 1
+            } else if (xParent < xChild) {
+                xChild - 1
+            } else {
+                xChild
+            }
 
-        val yChildNew = if (yParent > yChild) {
-            yChild + 1
-        } else if (yParent < yChild) {
-            yChild - 1
-        } else {
-            yChild
-        }
+        val yChildNew =
+            if (yParent > yChild) {
+                yChild + 1
+            } else if (yParent < yChild) {
+                yChild - 1
+            } else {
+                yChild
+            }
 
         child.mPosition = xChildNew to yChildNew
 
@@ -141,10 +143,10 @@ class Playfield(snakeLength: Int) {
 
 fun parseDirection(identifier: String): Direction {
     return when (identifier) {
-        "R" -> Right
-        "U" -> Up
-        "L" -> Left
-        "D" -> Down
+        "R" -> Direction.Right
+        "U" -> Direction.Up
+        "L" -> Direction.Left
+        "D" -> Direction.Down
         else -> {
             throw UnsupportedOperationException("not a valid identifier $identifier")
         }
@@ -152,10 +154,8 @@ fun parseDirection(identifier: String): Direction {
 }
 
 fun read_puzzle_input(filename: String): List<Pair<Direction, Int>> {
-    return File("src/test/kotlin/day9/$filename")
-        .readLines()
-        .map {
-            val split = it.split(" ")
-            parseDirection(split.first()) to split.last().toInt()
-        }
+    return File("src/test/kotlin/day9/$filename").readLines().map {
+        val split = it.split(" ")
+        parseDirection(split.first()) to split.last().toInt()
+    }
 }

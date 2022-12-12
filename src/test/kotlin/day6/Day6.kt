@@ -34,15 +34,11 @@ fun findMessage(line: String, length: Int): Int {
     return line
         .withIndex()
         .windowed(length, 1)
-        .first { it ->
-            it.map { it.value }
-                .sorted()
-                .distinct()
-                .count() == length
-        }.last().index + 1
+        .first { it -> it.map { it.value }.sorted().distinct().count() == length }
+        .last()
+        .index + 1
 }
 
 fun read_puzzle_input(filename: String): List<String> {
-    return File("src/test/kotlin/day6/$filename")
-        .readLines()
+    return File("src/test/kotlin/day6/$filename").readLines()
 }

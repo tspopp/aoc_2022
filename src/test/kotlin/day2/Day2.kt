@@ -76,23 +76,23 @@ data class Round(val victimMove: Shape, var playerMove: Shape) {
 }
 
 fun Round.cheat(): Round {
-    this.playerMove = when (this.playerMove) {
-        // NEED TO LOSE
-        Shape.ROCK -> {
-            Shape.values()[this.victimMove.beatsOrdinal]
+    this.playerMove =
+        when (this.playerMove) {
+            // NEED TO LOSE
+            Shape.ROCK -> {
+                Shape.values()[this.victimMove.beatsOrdinal]
+            }
+            // DRAW
+            Shape.PAPER -> {
+                this.victimMove
+            }
+            // NEED TO WIN
+            Shape.SCISSORS -> {
+                Shape.values()[this.victimMove.defeatedByOrdinal]
+            }
         }
-        // DRAW
-        Shape.PAPER -> {
-            this.victimMove
-        }
-        // NEED TO WIN
-        Shape.SCISSORS -> {
-            Shape.values()[this.victimMove.defeatedByOrdinal]
-        }
-    }
     return this
 }
-
 
 fun Round.score(): Int {
     return playerMove.play(victimMove) + this.playerMove.score
@@ -103,6 +103,5 @@ fun rounds(raw: String): List<Round> {
 }
 
 fun read_puzzle_input(filename: String): String {
-    return File("src/test/kotlin/day2/$filename")
-        .readText(Charsets.UTF_8)
+    return File("src/test/kotlin/day2/$filename").readText(Charsets.UTF_8)
 }

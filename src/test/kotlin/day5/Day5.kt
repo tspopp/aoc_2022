@@ -60,10 +60,10 @@ data class Harbor(val mDatabase: List<LinkedList<Char>>) {
                         .map { it.toCharArray().first() }
                 }
                 .forEach { items ->
-                    items.withIndex()
+                    items
+                        .withIndex()
                         .filter { !it.value.isWhitespace() }
-                        .forEach { (row, item) -> database[row].push(item) };
-
+                        .forEach { (row, item) -> database[row].push(item) }
                 }
             return Harbor(database)
         }
@@ -71,34 +71,26 @@ data class Harbor(val mDatabase: List<LinkedList<Char>>) {
 }
 
 fun Harbor.executeCommand(command: String, crateMover6001: Boolean = false) {
-
     val count = command.substringAfter("move").substringBefore("from").trim().toInt()
     val origin = command.substringAfter("from").substringBefore("to").trim().toInt()
     val destination = command.substringAfter("to").trim().toInt()
 
     if (crateMover6001) {
-        (1..count).map { mDatabase[origin - 1].pop() }
+        (1..count)
+            .map { mDatabase[origin - 1].pop() }
             .reversed()
-            .forEach {
-                mDatabase[destination - 1].push(it)
-            }
+            .forEach { mDatabase[destination - 1].push(it) }
     } else {
-        repeat(count) {
-            mDatabase[destination - 1].push(mDatabase[origin - 1].pop())
-        }
+        repeat(count) { mDatabase[destination - 1].push(mDatabase[origin - 1].pop()) }
     }
 }
 
 fun Harbor.message(): String {
-    return mDatabase.map { it.peek() }
-        .fold("") { message, it -> message.plus(it) }
+    return mDatabase.map { it.peek() }.fold("") { message, it -> message.plus(it) }
 }
 
 fun parseStackAndCommands(filename: String): Pair<String, String> {
-    val input = File(
-        "src/test/kotlin/day5" +
-                "/$filename"
-    ).readText(Charsets.UTF_8)
+    val input = File("src/test/kotlin/day5" + "/$filename").readText(Charsets.UTF_8)
 
     return Pair(input.substringBefore("\n\n"), input.substringAfter("\n\n"))
 }
