@@ -13,6 +13,7 @@ repositories {
 }
 
 dependencies {
+    implementation("org.jgrapht", "jgrapht-core", "1.5.0")
     testImplementation(kotlin("test"))
 }
 
