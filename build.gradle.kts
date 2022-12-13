@@ -15,6 +15,7 @@ repositories {
 
 dependencies {
     implementation("org.jgrapht", "jgrapht-core", "1.5.0")
+    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.1")
     testImplementation(kotlin("test"))
 }
 
@@ -23,7 +24,7 @@ spotless { // if you are using build.gradle.kts, instead of 'spotless {' use:
     kotlin {
         // by default the target is every '.kt' and '.kts` file in the java sourcesets
         ktfmt() // has its own section below
-        ktlint() // has its own section below
+        // ktlint() // has its own section below
         // diktat()   // has its own section below
         // prettier() // has its own section below
     }
