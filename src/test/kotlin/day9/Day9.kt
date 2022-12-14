@@ -8,7 +8,6 @@ import kotlin.test.assertEquals
 import org.junit.jupiter.api.Test
 import tools.Direction
 import tools.Point
-import tools.movePoint
 
 class Day9 {
   @Test
@@ -63,7 +62,7 @@ class SnakeElem(child: SnakeElem?, isHead: Boolean = false) {
   // TODO: Instead of tracking childs on our own, we might want to use a data structure which does
   // it for free?
   var mChild: SnakeElem? = child
-  var mPosition: Point = 0 to 0
+  var mPosition = Point(0, 0)
 
   fun isTail(): Boolean {
     return mChild == null
@@ -72,7 +71,7 @@ class SnakeElem(child: SnakeElem?, isHead: Boolean = false) {
 
 class Playfield(snakeLength: Int) {
   private val snake: ArrayList<SnakeElem> = ArrayList()
-  private var seen: HashSet<Point> = hashSetOf(0 to 0)
+  private var seen: HashSet<Point> = hashSetOf(Point(0, 0))
 
   init {
     // TODO: Well this doesn't look very nice
@@ -91,7 +90,7 @@ class Playfield(snakeLength: Int) {
 
       // modify position of head
       // TODO: Would be nice if movePoint mutates mPosition?
-      head.mPosition = head.mPosition.movePoint(direction)
+      head.mPosition = head.mPosition.move(direction)
 
       syncTailWithHead(head)
     }
@@ -127,7 +126,7 @@ class Playfield(snakeLength: Int) {
           yChild
         }
 
-    child.mPosition = xChildNew to yChildNew
+    child.mPosition = Point(xChildNew, yChildNew)
 
     if (child.isTail()) {
       seen.add(child.mPosition)

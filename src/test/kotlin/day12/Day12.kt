@@ -6,7 +6,6 @@ import org.jgrapht.alg.shortestpath.DijkstraShortestPath
 import org.jgrapht.graph.SimpleDirectedGraph
 import org.junit.jupiter.api.Test
 import tools.Point
-import tools.directNeighbors
 
 class Day12 {
 
