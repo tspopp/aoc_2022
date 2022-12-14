@@ -38,7 +38,7 @@ class Day14 {
     flowWithSandGold(sand, map)
 
     map.render(invertY = true)
-    assertEquals(24166, sand.count { !it.stillMoving })
+    assertEquals(93, sand.count { !it.stillMoving })
   }
 
   @Test
