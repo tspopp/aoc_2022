@@ -1,6 +1,12 @@
 package tools
 
+import kotlin.math.abs
+
 data class Point(val x: Int, val y: Int, var render: Char = 'x') {
+
+  fun manhattanDistance(other: Point): Int {
+    return abs(this.x - other.x) + abs(this.y - other.y)
+  }
 
   fun directNeighbors(): List<Point> {
     return Direction.values()
@@ -129,7 +135,7 @@ class Map {
     database.addAll(line.points())
   }
 
-  fun render(invertY: Boolean = false) {
+  fun renderToString(invertY: Boolean = false): List<String> {
     var xMinDatabase = database.minOf { it.x }
     var xMaxDatabse = database.maxOf { it.x }
     var yMaxDatabase = database.maxOf { it.y }
@@ -148,19 +154,30 @@ class Map {
       yMaxDatabase = this.yMax!!
     }
 
+    println("map dimensions x $xMinDatabase to $xMaxDatabse, y $yMinDatabase to $yMaxDatabase")
+
     var yRange: IntProgression = (yMinDatabase..yMaxDatabase)
     if (!invertY) {
       yRange = yRange.reversed()
     }
+
+    val out = mutableListOf<String>()
+
     for (y in yRange) {
+      var thisLine = ""
       for (x in xMinDatabase..xMaxDatabse) {
-        if (database.contains(Point(x, y))) {
-          print(database.find { it == Point(x, y) }!!.render())
+        thisLine = if (database.contains(Point(x, y))) {
+          thisLine.plus(database.find { it == Point(x, y) }!!.render())
         } else {
-          print(".")
+          thisLine.plus(".")
         }
       }
-      println()
+      out.add(thisLine)
     }
+    return out
+  }
+
+  fun render(invertY: Boolean = false) {
+    renderToString(invertY).forEach { println(it) }
   }
 }
