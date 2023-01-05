@@ -166,11 +166,12 @@ class Map {
     for (y in yRange) {
       var thisLine = ""
       for (x in xMinDatabase..xMaxDatabse) {
-        thisLine = if (database.contains(Point(x, y))) {
-          thisLine.plus(database.find { it == Point(x, y) }!!.render())
-        } else {
-          thisLine.plus(".")
-        }
+        thisLine =
+            if (database.contains(Point(x, y))) {
+              thisLine.plus(database.find { it == Point(x, y) }!!.render())
+            } else {
+              thisLine.plus(".")
+            }
       }
       out.add(thisLine)
     }
