@@ -17,6 +17,7 @@ dependencies {
     implementation("org.jgrapht", "jgrapht-core", "1.5.0")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.4.1")
     testImplementation(kotlin("test"))
+    implementation(kotlin("stdlib-jdk8"))
 }
 
 spotless { // if you are using build.gradle.kts, instead of 'spotless {' use:
@@ -43,4 +44,12 @@ tasks.withType<KotlinCompile> {
 
 application {
     mainClass.set("MainKt")
+}
+val compileKotlin: KotlinCompile by tasks
+compileKotlin.kotlinOptions {
+    jvmTarget = "1.8"
+}
+val compileTestKotlin: KotlinCompile by tasks
+compileTestKotlin.kotlinOptions {
+    jvmTarget = "1.8"
 }
