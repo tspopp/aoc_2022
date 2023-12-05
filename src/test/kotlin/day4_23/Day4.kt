@@ -5,29 +5,18 @@ import kotlin.test.assertEquals
 import org.junit.jupiter.api.Test
 import kotlin.math.pow
 
-data class Card(val idx: Int, val cards: Set<Int>, val winningCards: Set<Int>) {
-    val dups = getDuplicates()
-    val points = getPoints()
-}
+data class Card(val idx: Int, val numbers: Set<Int>, val winningNumbers: Set<Int>) {
+    val dups = numbers.intersect(winningNumbers).count()
 
-private fun Card.getDuplicates(): Int {
-    return cards.intersect(winningCards).count()
-}
-
-private fun Card.getPoints(): Int {
-    if (getDuplicates() == 0) {
-        return 0
+    val points = if (dups == 0) {
+        0
+    } else {
+        2.0.pow((dups - 1).toDouble()).toInt()
     }
-    return 2.0.pow((getDuplicates() - 1).toDouble()).toInt()
 }
 
 private fun unwrapCard(card: Card, deck: List<Card>): Int {
-    var counter = 1
-    val range = card.idx + 1..card.idx + card.dups
-    for (i in range) {
-        counter += unwrapCard(deck[i], deck)
-    }
-    return counter
+    return 1 + (card.idx + 1..card.idx + card.dups).sumOf { unwrapCard(deck[it], deck) };
 }
 
 class Day4 {
